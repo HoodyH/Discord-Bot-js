@@ -44,7 +44,8 @@ module.exports.run = async (bot, message, args) => {
         time: ["",""],
         request_on: 0,
         time_dancing: 0,
-        name: "AB_Songs",
+        logo: "AB_Songs",
+        creator_name: "The Boss",
         private_mode: 0, //show username of the person who request the song
         video_max_lenght: 300,
         single_user_songs_per_day: 5,
@@ -119,6 +120,23 @@ module.exports.run = async (bot, message, args) => {
 
     fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
     
+    var convertSeconds = function(sec) 
+    {
+      var days = Math.floor(sec / (3600*24));
+      var hrs = Math.floor((sec - (days * (3600*24))) / 3600);
+      var min = Math.floor((sec - (days * (3600*24)) - (hrs * 3600)) / 60);
+      var seconds = sec - (days * (3600*24)) - (hrs * 3600) - (min * 60);
+      seconds = Math.round(seconds * 100) / 100
+     
+      var result = (days != 0 ? days + "d " : "");
+      result += (hrs != 0 || days != 0  ? (hrs < 10 ? "0" + hrs : hrs) + "h " : "");
+      result += (min != 0 || hrs != 0 || days != 0 ? (min < 10 ? "0" + min : min) + "m " : "");
+      result += (seconds < 10 ? "0" + seconds : seconds);
+      result += "s";
+      return result;
+
+    }//end convert seconds
+
     message.channel.send({embed: {
         color: 1,
         author: {
@@ -126,25 +144,25 @@ module.exports.run = async (bot, message, args) => {
           "icon_url": message.author.displayAvatarURL
         },
         title: title,
-        description: "Dance Request",
         url: video.url,
+        description: `You had request **${u_log.song_counter}** songs, and **${g_log.creator_name}** has danced for you **${convertSeconds(u_log.time_dancing)}**\nThis song is **${video.length} min** long`,
         thumbnail: {
             "url": video.thumbnail
         },
         fields: [{
-            "name": "Duration",
-            "value": video.length,
+            "name": "Golbal Counter",
+            "value": g_log.song_counter,
             "inline": true
           },
           {
-            "name": "Request Counter",
-            "value": "1",
+            "name": "All Time dancing",
+            "value": convertSeconds(g_log.time_dancing),
             "inline": true
           }
         ],
         timestamp: new Date(),
         footer: {
-          text: "© NLD"
+          text: `© ${g_log.logo}`
         }
       }
     }).then(async message => {

@@ -59,8 +59,10 @@ bot.on("message", async message => {
   if(message.author.bot) return;
   if(message.channel.type === "dm") return;
 
+  auto_mod.auto_mod(message);
+  auto_msg_response.auto_msg_response(message);
   //msg_sniffer.sniff(message);
-  //user_data_update.user_data_update(message);
+  user_data_update.user_data_update(message);
 
   //save the prefix change differents guilds
   let prefixes = JSON.parse(fs.readFileSync("./storage/prefixes.json", "utf8"));

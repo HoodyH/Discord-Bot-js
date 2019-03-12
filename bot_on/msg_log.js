@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class msg_log
+class _msg_log
 {
     async user_informations_log(message, file)
     {
@@ -22,7 +22,7 @@ class msg_log
         }
     }//end user_informations_log
 
-    async sniff(message)
+    async msg_log(message)
     {
         if(message.author.bot) {return;}
 
@@ -58,4 +58,4 @@ class msg_log
     }//end sniff
         
 }
-module.exports = msg_log;
+module.exports = _msg_log;

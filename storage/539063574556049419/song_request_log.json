@@ -1,6 +1,6 @@
 {
     "guild_data": {
-        "song_counter": 30,
+        "song_counter": 58,
         "vid_id": [
             "",
             ""
@@ -9,9 +9,10 @@
             "",
             ""
         ],
-        "request_on": 30,
-        "time_dancing": 235650,
-        "name": "AB_Songs",
+        "request_on": 58,
+        "time_dancing": 239990,
+        "logo": "Bot_test",
+        "creator_name": "The Boss",
         "private_mode": 0,
         "video_max_lenght": 300,
         "single_user_songs_per_day": 5,
@@ -22,7 +23,7 @@
     },
     "436515529692545044": {
         "name": "AbbestiaDC#4177",
-        "song_counter": 30,
+        "song_counter": 58,
         "vid_id": [
             "",
             ""
@@ -32,7 +33,7 @@
             ""
         ],
         "role": 0,
-        "request_on": 30,
-        "time_dancing": 4650
+        "request_on": 58,
+        "time_dancing": 8990
     }
 }

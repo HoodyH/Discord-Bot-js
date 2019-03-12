@@ -61,12 +61,12 @@ class _user_data_update
             };
         }
 
-        //
-        //xp manage
-        //----------------------------------------------
         var local_log = local_userdata_log[message.author.id];
         var global_log = global_userdata_log[message.author.id];
 
+        //
+        //xp manage
+        //----------------------------------------------
         let xpAdd = Math.floor(Math.random() * 7) + 8;
         console.log(xpAdd);
 
@@ -74,7 +74,7 @@ class _user_data_update
         let curlvl = local_log.level;
         let nxtLvl = local_log.level * 300;
 
-        local_log.xp =  curxp + xpAdd;
+        local_log.xp = curxp + xpAdd;
         
         if(nxtLvl <= local_log.xp){
             local_log.level = curlvl + 1;
@@ -97,16 +97,10 @@ class _user_data_update
             local_log = {
             bits: local_log.bits + coinAmt
             };
-
-            let coinEmbed = new Discord.RichEmbed()
-            .setAuthor(message.author.username)
-            .setColor("#0000FF")
-            .addField("💸", `${coinAmt} coins added!`);
-            
-            message.channel.send(coinEmbed).then(msg => {msg.delete(time_auto_delete)});
         }
 
-        fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
+        fse.outputFileSync(local_file_dir, JSON.stringify(local_userdata_log, null, 4));
+        fse.outputFileSync(global_file_dir, JSON.stringify(global_userdata_log, null, 4));
 
     }//end_user_data_update
     
