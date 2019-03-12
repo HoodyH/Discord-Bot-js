@@ -1,9 +1,9 @@
+const command_name = "song.request";
 const errors = require("../utils/errors.js");
 const config = require("../bot_config_json/botconfig.json");
 
 const fse = require('fs-extra');
 const YT = require("discord-youtube-api");
-
 
 const youtube = new YT(config.youtube_TOKEN);
 
@@ -15,13 +15,6 @@ module.exports.run = async (bot, message, args) => {
     message.delete()
         .then(msg => console.log(`Deleted message from ${msg.author.username}`))
         .catch(console.error);
-
-    if(args == ""){
-      message.channel.send("You have to put a link!").then(async message => {
-        message.delete(time_auto_delete);
-      });
-      return;
-    }
 
     const storage_location = "./storage";
     const server_id = message.guild.id;
@@ -37,7 +30,8 @@ module.exports.run = async (bot, message, args) => {
         }
     }
 
-    if(!song_request_log[message.author.id]){
+    if(!song_request_log["guild_data"])
+    {
       song_request_log["guild_data"] = {
         song_counter: 0,
         vid_id: ["",""],
@@ -51,13 +45,18 @@ module.exports.run = async (bot, message, args) => {
         single_user_songs_per_day: 5,
         total_songs_per_day: 100,
         cooldown_time: 0,
-        role_reward: 1,
+        role_reward_en: 1,
+        role: 0,
+        lock_in_channel_en: 1,
+        channel_id: "ND",
+        channel_name: "ND",
         unlock_role_at: 100
       };
       fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
     }
     //if user do not exist create it
-    if(!song_request_log[message.author.id]){
+    if(!song_request_log[message.author.id])
+    {
       song_request_log[message.author.id] = {
         name: message.author.tag,
         song_counter: 0,
@@ -72,6 +71,49 @@ module.exports.run = async (bot, message, args) => {
     const u_log = song_request_log[message.author.id];
     const g_log = song_request_log["guild_data"];
 
+    if(args == "init" && g_log.lock_in_channel_en == 1)
+    {
+      if(message.member.hasPermission("ADMINISTRATOR"))
+      {
+        g_log.channel_id = message.channel.id;
+        g_log.channel_name = message.channel.name;
+        fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
+        message.channel.send("Init in this channel completed").then(async message => {
+            message.delete(time_auto_delete);
+        });
+        return;
+      }else{
+        message.channel.send("You need **ADMINISTRATOR** role! boiii").then(async message => {
+            message.delete(time_auto_delete);
+        });
+        return;
+      }
+    }
+
+    if(g_log.channel_id != "ND" && g_log.lock_in_channel_en == 1 && message.channel.id != g_log.channel_id){
+      message.channel.send("Wrong channel for this command bru, go in **#" + g_log.channel_name + "**").then(async message => {
+        message.delete(time_auto_delete);
+      });
+      return;
+    }
+
+    if(args == ""){
+      message.channel.send("You have to put a YT link!").then(async message => {
+        message.delete(time_auto_delete);
+      });
+      return;
+    }
+
+    if(g_log.lock_in_channel_en == 1 && g_log.channel == "ND")
+    {
+      let prefix = require("../storage/prefixes");
+      message.channel.send("You have to **init** the channel, use " + prefix[message.guild.id].prefix + command_name + " init\n and for **keep this chat cleen** of text use " + prefix[message.guild.id].prefix + "deleted.auto")
+        .then(async message => {
+          message.delete(time_auto_delete);
+      });
+      return;
+    }
+
     const u_requests_on = u_log.requests_on;
     const g_requests_on = g_log.requests_on;
 
@@ -79,7 +121,8 @@ module.exports.run = async (bot, message, args) => {
     const video_max_lenght = g_log.video_max_lenght; //tempo massimo del video in secondi
 
     //ceck number of songs per day by single user and by boss
-    if(u_requests_on > single_user_songs_per_day){
+    if(u_requests_on > single_user_songs_per_day)
+    {
         message.channel.send("Yooo, you have already request "+ single_user_songs_per_day + " songs!").then(async message => {
             message.delete(time_auto_delete);
         });
@@ -178,5 +221,5 @@ module.exports.run = async (bot, message, args) => {
 }
 
 module.exports.help = {
-  name: "songrequest"
+  name: command_name
 }

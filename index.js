@@ -1,10 +1,9 @@
 const botconfig = require("./bot_config_json/botconfig.json");
 const Discord = require("discord.js");
-const fs = require("fs");
+const fse = require("fs-extra");
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 let cooldown = new Set();
-let cooldown_sec = botconfig.cooldown_sec;
 const TOKEN = botconfig.test_TOKEN;
 
 const Auto_mod = require("./bot_on/auto_mod.js");
@@ -16,7 +15,7 @@ const msg_log = new Msg_log();
 const User_data_update = require("./bot_on/user_data_update.js");
 const user_data_update = new User_data_update();
 
-fs.readdir("./commands/", (err, files) => {
+fse.readdir("./commands/", (err, files) => {
 
   if(err) console.log(err);
   let jsfile = files.filter(f => f.split(".").pop() === "js");
@@ -65,14 +64,25 @@ bot.on("message", async message => {
   user_data_update.user_data_update(message);
 
   //save the prefix change differents guilds
-  let prefixes = JSON.parse(fs.readFileSync("./storage/prefixes.json", "utf8"));
+  const prefix_dir = "./storage/prefixes.json";
+  var prefixes;
+    try {
+      prefixes = require(prefix_dir);
+  } catch (err) {
+      if (err.code == 'MODULE_NOT_FOUND') {
+          fse.outputFileSync(prefix_dir, "{}");
+          prefixes = require(prefix_dir);
+      }
+  }
   if(!prefixes[message.guild.id]){
     prefixes[message.guild.id] = {
-      prefixes: botconfig.defaultPrefix
+      name: message.guild.name,
+      prefix: botconfig.defaultPrefix
     };
+    fse.outputFileSync(prefix_dir, JSON.stringify(prefixes, null, 4));
   }
 
-  let prefix = prefixes[message.guild.id].prefixes;
+  let prefix = prefixes[message.guild.id].prefix;
   if(!message.content.startsWith(prefix)) return;
   if(cooldown.has(message.author.id)){
     message.delete();
@@ -91,7 +101,7 @@ bot.on("message", async message => {
 
   setTimeout(() => {
     cooldown.delete(message.author.id)
-  }, cooldown_sec * 1000)
+  }, botconfig.commands_cooldown_sec * 1000)
 
 });
 
