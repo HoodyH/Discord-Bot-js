@@ -1,0 +1,10 @@
+
+Bot_stable 539013988269293588
+https://discordapp.com/api/oauth2/authorize?client_id=539013988269293588&permissions=8&scope=bot
+
+Bot_beta_test 550259518110695427
+https://discordapp.com/api/oauth2/authorize?client_id=550259518110695427&permissions=8&scope=bot
+
+
+
+npm install --save discord-youtube-api

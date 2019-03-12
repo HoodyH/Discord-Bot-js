@@ -1,0 +1,38 @@
+{
+    "guild_data": {
+        "song_counter": 30,
+        "vid_id": [
+            "",
+            ""
+        ],
+        "time": [
+            "",
+            ""
+        ],
+        "request_on": 30,
+        "time_dancing": 235650,
+        "name": "AB_Songs",
+        "private_mode": 0,
+        "video_max_lenght": 300,
+        "single_user_songs_per_day": 5,
+        "total_songs_per_day": 100,
+        "cooldown_time": 0,
+        "role_reward": 1,
+        "unlock_role_at": 100
+    },
+    "436515529692545044": {
+        "name": "AbbestiaDC#4177",
+        "song_counter": 30,
+        "vid_id": [
+            "",
+            ""
+        ],
+        "time": [
+            "",
+            ""
+        ],
+        "role": 0,
+        "request_on": 30,
+        "time_dancing": 4650
+    }
+}
