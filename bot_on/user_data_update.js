@@ -31,13 +31,12 @@ class _user_data_update
                     levelup_notification: 0,
                     levelup_notification_location: 0,
                     levelup_sentence: "Level up! stop spamming boiii",
-                    auto_role_en: 1,
-                    role_1_at: 20,
-                    role_1_name: "writer",
-                    role_2_at: 30,
-                    role_2_name: "pro writer",
-                    role_3_at: 40,
-                    role_3_name: "hyper writer"
+                    auto_role_base: 0,
+                    auto_role_en: 0,
+                    auto_role_assign: 0,
+                    nr_of_role: 3,
+                    role_at: [0,20,30,40],
+                    role_name: ["member", "writer", "pro writer", "hyper writer"]
                 };
                 fse.outputFileSync(local_file_dir, JSON.stringify(local_userdata_log, null, 4));
             }
@@ -177,17 +176,35 @@ class _user_data_update
             local_log.time_spent_sec += botconfig.xp_cooldown_sec;
             global_log.time_spent_sec += botconfig.xp_cooldown_sec;
 
-            //auto role assigment 
-            if(local_log.auto_role_en == 1){
-                if(local_log.level >= local_config.role_1_at){
-                    message.channel.send(local_config.role_1_name);
-                }
-                if(local_log.level >= local_config.role_2_at){
-                    message.channel.send(local_config.role_2_name);
-                }
-                if(local_log.level >= local_config.role_3_at){
-                    message.channel.send(local_config.role_3_name);
-                }
+            //auto role assigment
+
+            if(local_log.auto_role_base == 1){
+                //give_base_role
+            }else{
+                //remove base role
+            }
+            
+
+            if(local_log.auto_role_en == 1)
+            {
+                if(local_log.level >= local_config.role_at[3]){
+                    local_log.role = 3;
+                    //give_role
+                    //remove_role 1-2
+                }else if(local_log.level >= local_config.role_at[2])
+                    {
+                        local_log.role = 2;
+                        //give_role
+                        //remove_role 1-3
+                    }else if(local_log.level >= local_config.role_at[1])
+                        {
+                            local_log.role = 1;
+                            //give_role
+                            //remove_role 2-3
+                        }else{
+                            local_log.role = 0;
+                            //remove_role 1-2-3
+                        }
             }
             
             //bits manage

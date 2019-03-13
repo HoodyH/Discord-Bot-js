@@ -1,3 +1,4 @@
+const command_name = "bot.info";
 const Discord = require("discord.js");
 
 module.exports.run = async (bot, message, args) => {
@@ -13,5 +14,5 @@ module.exports.run = async (bot, message, args) => {
 }
 
 module.exports.help = {
-  name:"botinfo"
+  name: command_name
 }

@@ -1,2 +1,3 @@
 #ignore all node folder
-#/node_modules
+./node_modules
+./storage
