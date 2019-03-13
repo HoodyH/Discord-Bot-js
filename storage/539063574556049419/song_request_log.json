@@ -1,0 +1,44 @@
+{
+    "guild_data": {
+        "song_counter": 0,
+        "vid_id": [
+            "",
+            ""
+        ],
+        "time": [
+            "",
+            ""
+        ],
+        "request_on": 0,
+        "time_dancing": 0,
+        "logo": "AB_Songs",
+        "creator_name": "The Boss",
+        "private_mode": 0,
+        "video_max_lenght": 300,
+        "single_user_songs_per_day_en": 0,
+        "single_user_songs_per_day": 5,
+        "total_songs_per_day_en": 0,
+        "total_songs_per_day": 100,
+        "cooldown_time": 0,
+        "auto_role_en": 1,
+        "auto_role_assign": 0,
+        "role_at": [
+            100,
+            200,
+            500
+        ],
+        "role_color": [
+            "#00ff26",
+            "#ff6a00",
+            "#d604cf"
+        ],
+        "role_name": [
+            "S",
+            "SS",
+            "SSS"
+        ],
+        "lock_in_channel_en": 1,
+        "channel_id": "ND",
+        "channel_name": "ND"
+    }
+}

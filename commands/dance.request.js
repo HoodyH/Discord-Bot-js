@@ -1,20 +1,18 @@
-const command_name = "song.request";
+const command_name = "dance.request";
 const errors = require("../utils/errors.js");
-const config = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config_json/botconfig.json");
 
 const fse = require('fs-extra');
 const YT = require("discord-youtube-api");
 
-const youtube = new YT(config.youtube_TOKEN);
+const youtube = new YT(botconfig.youtube_TOKEN);
 
 let song_request_log;
-const time_auto_delete = config.time_auto_delete;
+const time_auto_delete = botconfig.time_auto_delete;
 
 module.exports.run = async (bot, message, args) => {
 
-    message.delete()
-        .then(msg => console.log(`Deleted message from ${msg.author.username}`))
-        .catch(console.error);
+    message.delete().catch(console.error);
 
     const storage_location = "./storage";
     const server_id = message.guild.id;
@@ -40,17 +38,22 @@ module.exports.run = async (bot, message, args) => {
         time_dancing: 0,
         logo: "AB_Songs",
         creator_name: "The Boss",
-        private_mode: 0, //show username of the person who request the song
+        private_mode: 0, //don't show username of the person who request the song
         video_max_lenght: 300,
+        single_user_songs_per_day_en: 0,
         single_user_songs_per_day: 5,
+        total_songs_per_day_en: 0,
         total_songs_per_day: 100,
         cooldown_time: 0,
-        role_reward_en: 1,
-        role: 0,
+        auto_role_en: 1,
+        auto_role_assign: 0,
+        role_at: [100,200,500],
+        role_color: [botconfig.green, botconfig.orange, botconfig.purple],
+        role_name: ["S","SS","SSS"],
         lock_in_channel_en: 1,
         channel_id: "ND",
-        channel_name: "ND",
-        unlock_role_at: 100
+        channel_name: "ND"
+        
       };
       fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
     }
@@ -71,6 +74,8 @@ module.exports.run = async (bot, message, args) => {
     const u_log = song_request_log[message.author.id];
     const g_log = song_request_log["guild_data"];
 
+
+    //prececk
     if(args == "init" && g_log.lock_in_channel_en == 1)
     {
       if(message.member.hasPermission("ADMINISTRATOR"))
@@ -97,19 +102,19 @@ module.exports.run = async (bot, message, args) => {
       return;
     }
 
-    if(args == ""){
-      message.channel.send("You have to put a YT link!").then(async message => {
-        message.delete(time_auto_delete);
-      });
-      return;
-    }
-
-    if(g_log.lock_in_channel_en == 1 && g_log.channel == "ND")
+    if(g_log.lock_in_channel_en == 1 && g_log.channel_id == "ND")
     {
       let prefix = require("../storage/prefixes");
       message.channel.send("You have to **init** the channel, use " + prefix[message.guild.id].prefix + command_name + " init\n and for **keep this chat cleen** of text use " + prefix[message.guild.id].prefix + "deleted.auto")
         .then(async message => {
           message.delete(time_auto_delete);
+      });
+      return;
+    }
+
+    if(args == ""){
+      message.channel.send("You have to put a YT link!").then(async message => {
+        message.delete(time_auto_delete);
       });
       return;
     }
@@ -121,7 +126,7 @@ module.exports.run = async (bot, message, args) => {
     const video_max_lenght = g_log.video_max_lenght; //tempo massimo del video in secondi
 
     //ceck number of songs per day by single user and by boss
-    if(u_requests_on > single_user_songs_per_day)
+    if(g_logs.single_user_songs_per_day_en == 1 && u_requests_on > single_user_songs_per_day)
     {
         message.channel.send("Yooo, you have already request "+ single_user_songs_per_day + " songs!").then(async message => {
             message.delete(time_auto_delete);
@@ -143,6 +148,7 @@ module.exports.run = async (bot, message, args) => {
     const title = video.title.toLocaleUpperCase();
 
     //new parameters calculate and let
+    g_log.channel_name = message.channel.name;
     u_log.name = message.author.tag;
     g_log.song_counter++;
     u_log.song_counter++;
