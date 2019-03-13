@@ -1,39 +1,34 @@
+//command_name
 const command_name = "dance.request";
-const errors = require("../utils/errors.js");
+
+//utilities
 const botconfig = require("../bot_config_json/botconfig.json");
+const errors = require("../utils/errors.js");
+const notifications = require("../utils/notifications.js");
+const permits = require("../utils/permits_ceck.js");
+const utils = require("../utils/utils.js");
 
-const fse = require('fs-extra');
+//external_libs
+const Discord = require("discord.js");
 const YT = require("discord-youtube-api");
-
 const youtube = new YT(botconfig.youtube_TOKEN);
 
-let song_request_log;
+//variables
 const time_auto_delete = botconfig.time_auto_delete;
 
 module.exports.run = async (bot, message, args) => {
 
     message.delete().catch(console.error);
 
-    const storage_location = "./storage";
-    const server_id = message.guild.id;
-    const dir = `${storage_location}/${server_id}`; //song_request.json
-    const file_dir = `${dir}/song_request_log.json`;
+    let file_dir = utils.jsonLogName(message, "song_request_log");
+    let json_file = utils.jsonLogOpen(file_dir);
 
-    try {
-        song_request_log = require("."+file_dir);
-    } catch (err) {
-        if (err.code == 'MODULE_NOT_FOUND') {
-            fse.outputFileSync(file_dir, "{}");
-            song_request_log = require("."+file_dir);
-        }
-    }
-
-    if(!song_request_log["guild_data"])
+    if(!json_file["guild_data"])
     {
-      song_request_log["guild_data"] = {
+      json_file["guild_data"] = {
         song_counter: 0,
-        vid_id: ["",""],
-        time: ["",""],
+        vid_id: [],
+        time: [],
         request_on: 0,
         time_dancing: 0,
         logo: "AB_Songs",
@@ -55,93 +50,88 @@ module.exports.run = async (bot, message, args) => {
         channel_name: "ND"
         
       };
-      fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
+      utils.jsonLogSave(file_dir, json_file);
     }
     //if user do not exist create it
-    if(!song_request_log[message.author.id])
+    if(!json_file[message.author.id])
     {
-      song_request_log[message.author.id] = {
+      json_file[message.author.id] = {
         name: message.author.tag,
         song_counter: 0,
-        vid_id: ["",""],
-        time: ["",""],
+        vid_id: [],
+        time: [],
         role: 0,
         request_on: 0,
         time_dancing: 0
       };
     }
     
-    const u_log = song_request_log[message.author.id];
-    const g_log = song_request_log["guild_data"];
+    const u_log = json_file[message.author.id];
+    const g_log = json_file["guild_data"];
 
 
-    //prececk
+    //prececk----------------------------------
+
+    //recicived a init request, ceck permissions before go
     if(args == "init" && g_log.lock_in_channel_en == 1)
     {
-      if(message.member.hasPermission("ADMINISTRATOR"))
+      if(permits.configurator(message))
       {
         g_log.channel_id = message.channel.id;
         g_log.channel_name = message.channel.name;
-        fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
-        message.channel.send("Init in this channel completed").then(async message => {
-            message.delete(time_auto_delete);
-        });
-        return;
-      }else{
-        message.channel.send("You need **ADMINISTRATOR** role! boiii").then(async message => {
-            message.delete(time_auto_delete);
-        });
+        utils.jsonLogSave(file_dir, json_file);
+
+        notifications.initDone(message);
+        return;  
+
+      //this user cant init cause not enought permissions
+      }else{ 
+        errors.noPermits(message, "configurator")
         return;
       }
     }
 
-    if(g_log.channel_id != "ND" && g_log.lock_in_channel_en == 1 && message.channel.id != g_log.channel_id){
-      message.channel.send("Wrong channel for this command bru, go in **#" + g_log.channel_name + "**").then(async message => {
-        message.delete(time_auto_delete);
-      });
+    //ceck if you are in the correct channel
+    if(g_log.channel_id != "ND" && g_log.lock_in_channel_en == 1 && message.channel.id != g_log.channel_id)
+    {
+      errors.wrongChannel(message, g_log.channel_name);
       return;
     }
 
+    //init required, the command dont have a channel assigned
     if(g_log.lock_in_channel_en == 1 && g_log.channel_id == "ND")
     {
-      let prefix = require("../storage/prefixes");
-      message.channel.send("You have to **init** the channel, use " + prefix[message.guild.id].prefix + command_name + " init\n and for **keep this chat cleen** of text use " + prefix[message.guild.id].prefix + "deleted.auto")
-        .then(async message => {
-          message.delete(time_auto_delete);
-      });
+      notifications.init(message, command_name);
       return;
     }
 
-    if(args == ""){
-      message.channel.send("You have to put a YT link!").then(async message => {
-        message.delete(time_auto_delete);
-      });
+    //no link providec
+    if(args == "")
+    {
+      errors.commandError(message, "You have to put a YT link!");
       return;
     }
 
+    //prececk ended----------------------------------
+
+    //shortcuts
     const u_requests_on = u_log.requests_on;
     const g_requests_on = g_log.requests_on;
 
     const single_user_songs_per_day = g_log.single_user_songs_per_day;
-    const video_max_lenght = g_log.video_max_lenght; //tempo massimo del video in secondi
+    const video_max_lenght = g_log.video_max_lenght; //max time in sec for not elimitate the video
 
     //ceck number of songs per day by single user and by boss
-    if(g_logs.single_user_songs_per_day_en == 1 && u_requests_on > single_user_songs_per_day)
+    if(g_log.single_user_songs_per_day_en == 1 && u_requests_on > single_user_songs_per_day)
     {
-        message.channel.send("Yooo, you have already request "+ single_user_songs_per_day + " songs!").then(async message => {
-            message.delete(time_auto_delete);
-        });
-        return;
+      errors.commandError(message, `message, Yooo, you have already request ${single_user_songs_per_day} songs!`);
+      return;
     }
-    //numero di canzoni richiedibili al giorno
-    //sono passate almeno le ore
 
-    const video = await youtube.getVideo(args.toString()); //richiesta del video   
+    const video = await youtube.getVideo(args.toString()); //video API request
     
     if(video.durationSeconds > video_max_lenght){
-      message.channel.send(message.author.username + " **the video must be shorter** then " + video_max_lenght/60 + " min!").then(async message => {
-        message.delete(time_auto_delete);
-      });
+      errors.commandError(message, `**the video must be shorter** then ${video_max_lenght/60} min!`);
       return;
     }
 
@@ -167,54 +157,22 @@ module.exports.run = async (bot, message, args) => {
     u_log.time_dancing += video.durationSeconds;
     g_log.time_dancing += video.durationSeconds;
 
-    fse.outputFileSync(file_dir, JSON.stringify(song_request_log, null, 4));
-    
-    var convertSeconds = function(sec) 
-    {
-      var days = Math.floor(sec / (3600*24));
-      var hrs = Math.floor((sec - (days * (3600*24))) / 3600);
-      var min = Math.floor((sec - (days * (3600*24)) - (hrs * 3600)) / 60);
-      var seconds = sec - (days * (3600*24)) - (hrs * 3600) - (min * 60);
-      seconds = Math.round(seconds * 100) / 100
-     
-      var result = (days != 0 ? days + "d " : "");
-      result += (hrs != 0 || days != 0  ? (hrs < 10 ? "0" + hrs : hrs) + "h " : "");
-      result += (min != 0 || hrs != 0 || days != 0 ? (min < 10 ? "0" + min : min) + "m " : "");
-      result += (seconds < 10 ? "0" + seconds : seconds);
-      result += "s";
-      return result;
+    utils.jsonLogSave(file_dir, json_file);
 
-    }//end convert seconds
+    let embed = new Discord.RichEmbed()
+        .setColor(botconfig.black)
+        .setAuthor(message.author.tag, message.author.displayAvatarURL)
+        .setTitle(title)
+        .setURL(video.url)
+        .setDescription(`You had request **${u_log.song_counter}** songs, and **${g_log.creator_name}** has danced for you **${utils.secondsToTime(u_log.time_dancing)}**\nThis song is **${video.length} min** long`)
+        .setThumbnail(video.thumbnail)
+        .addField("Golbal Counter", g_log.song_counter, true)
+        .addField("All Time dancing", utils.secondsToTime(g_log.time_dancing), true)
+        .setTimestamp(new Date())
+        .setFooter(`© ${g_log.logo}`)
 
-    message.channel.send({embed: {
-        color: 1,
-        author: {
-          "name": message.author.tag,
-          "icon_url": message.author.displayAvatarURL
-        },
-        title: title,
-        url: video.url,
-        description: `You had request **${u_log.song_counter}** songs, and **${g_log.creator_name}** has danced for you **${convertSeconds(u_log.time_dancing)}**\nThis song is **${video.length} min** long`,
-        thumbnail: {
-            "url": video.thumbnail
-        },
-        fields: [{
-            "name": "Golbal Counter",
-            "value": g_log.song_counter,
-            "inline": true
-          },
-          {
-            "name": "All Time dancing",
-            "value": convertSeconds(g_log.time_dancing),
-            "inline": true
-          }
-        ],
-        timestamp: new Date(),
-        footer: {
-          text: `© ${g_log.logo}`
-        }
-      }
-    }).then(async message => {
+    message.channel.send(embed).then(async message => {
+      
       await message.react("✅");
       await message.react("❌");
       //await message.react("❤");
@@ -223,9 +181,12 @@ module.exports.run = async (bot, message, args) => {
       //await message.react("🇴");
       //await message.react("🇳");
       //await message.react("🇬");
-  }); 
+  });
+
 }
 
 module.exports.help = {
   name: command_name
 }
+
+// \dance.request https://www.youtube.com/watch?v=edeMiqWgWx0

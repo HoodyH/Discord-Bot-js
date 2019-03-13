@@ -1,0 +1,51 @@
+//command_name
+const command_name = "keep.deleted";
+
+const Discord = require("discord.js");
+const errors = require("../utils/errors.js");
+const notifications = require("../utils/notifications.js");
+const permits = require("../utils/permits_ceck.js");
+const utils = require("../utils/utils.js");
+
+module.exports.run = async (bot, message, args) => {
+    
+  message.delete().catch(console.error);
+
+  if(!permits.configurator(message)){
+    errors.noPermits(message, "Configurator");
+    return;
+  }
+
+  let file_dir = utils.jsonLogName(message, "guild_config");
+  let json_file = utils.jsonLogOpen(file_dir);
+
+  if(!json_file["channel_keep_deleted"])
+  {
+    json_file["channel_keep_deleted"] = {
+      channels_id: []
+    }
+  }
+  
+  let channels_id = json_file["channel_keep_deleted"].channels_id;
+  let array = channels_id.slice(0);
+  
+  if(!array.includes(message.channel.id)) {
+    array.push(message.channel.id);
+    notifications.activated(message, command_name);
+  }else{
+    for( let i = 0; i < array.length; i++){ 
+      if ( array[i] === message.channel.id) {
+        array.splice(i, 1); 
+      }
+    }
+    notifications.deactivated(message, command_name);
+  }
+
+  json_file["channel_keep_deleted"].channels_id = array;
+
+  utils.jsonLogSave(file_dir, json_file);
+}
+
+module.exports.help = {
+  name: command_name
+}

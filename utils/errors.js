@@ -1,26 +1,59 @@
 const Discord = require("discord.js");
-const fs = require("fs");
-const config = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config_json/botconfig.json");
 
-module.exports.noPerms = (message, perm) => {
+
+module.exports.noChatHere = (message) => {
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
-        .setTitle("Insufficient Permission")
-        .setColor(config.red)
-        .addField("Permission needed", perm);
+        .setColor(botconfig.red)
+        .setTitle("**You can't chat here**")
+        .setDescription("this channel is not meant for this");
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+}
+
+module.exports.noPermits = (message, perm) => {
+    const prefix = require("../storage/prefixes");
+    let p = prefix[message.guild.id].prefix;
+
+    let embed = new Discord.RichEmbed()
+        .setAuthor(message.author.username)
+        .setTitle("**Insufficient Permissions**")
+        .setColor(botconfig.red)
+        .addField(`You need: **${perm}** permit`, `use ${p}help.permits to learn more`);
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+}
+
+module.exports.wrongChannel = (message, channel) => {
+    let embed = new Discord.RichEmbed()
+        .setAuthor(message.author.username)
+        .setColor(botconfig.red)
+        .setTitle("Wrong channel for this command bru")
+        .setDescription("go in **#" + channel + "**");
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+}
+
+module.exports.commandError = (message, error) => {
+    
+    let embed = new Discord.RichEmbed()
+        .setAuthor(message.author.username)
+        .setColor(botconfig.red)
+        .setTitle(error);
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
 }
 
 module.exports.equalPerms = (message, user, perms) => {
 
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
-        .setColor(config.red)
+        .setColor(botconfig.red)
         .setTitle("Error")
         .addField(`${user} has perms`, perms);
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
 
 }
 
@@ -28,25 +61,25 @@ module.exports.botuser = (message) => {
     let embed = new Discord.RichEmbed()
         .setTitle("Error")
         .setDescription("You cannot ban a bot.")
-        .setColor(config.red);
+        .setColor(botconfig.red);
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
 }
 
 module.exports.cantfindUser = (channel) => {
     let embed = new Discord.RichEmbed()
         .setTitle("Error")
         .setDescription("Could not find that user.")
-        .setColor(config.red);
+        .setColor(botconfig.red);
 
-    channel.send(embed).then(m => m.delete(5000));
+    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
 }
 
 module.exports.noReason = (channel) => {
     let embed = new Discord.RichEmbed()
         .setTitle("Error")
         .setDescription("Please supply a reason.")
-        .setColor(config.red);
+        .setColor(botconfig.red);
 
-    channel.send(embed).then(m => m.delete(5000));
+    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
 }

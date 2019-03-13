@@ -15,6 +15,7 @@ const msg_log = new Msg_log();
 const User_data_update = require("./bot_on/user_data_update.js");
 const user_data_update = new User_data_update();
 
+
 fse.readdir("./commands/", (err, files) => {
 
   if(err) console.log(err);
@@ -58,7 +59,8 @@ bot.on("message", async message => {
   if(message.author.bot) return;
   if(message.channel.type === "dm") return;
 
-  auto_mod.auto_mod(message);
+  //bot_on_functions
+  auto_mod.keep_deleted(message);
   auto_msg_response.auto_msg_response(message);
   //msg_sniffer.sniff(message);
   user_data_update.user_data_update(message);
@@ -66,14 +68,16 @@ bot.on("message", async message => {
   //save the prefix change differents guilds
   const prefix_dir = "./storage/prefixes.json";
   var prefixes;
-    try {
-      prefixes = require(prefix_dir);
+  
+  try {
+    prefixes = require(prefix_dir);
   } catch (err) {
       if (err.code == 'MODULE_NOT_FOUND') {
           fse.outputFileSync(prefix_dir, "{}");
           prefixes = require(prefix_dir);
       }
   }
+
   if(!prefixes[message.guild.id]){
     prefixes[message.guild.id] = {
       name: message.guild.name,
