@@ -1,7 +1,6 @@
 #ignore all node folder
-*~
-/node_modules/#*#
-/storage/#*#
+node_modules/
+storage/
 
 *.jss
 *.txt
