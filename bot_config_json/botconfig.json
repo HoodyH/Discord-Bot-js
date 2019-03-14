@@ -14,6 +14,8 @@
     "aut_writers": ["539013988269293588","550259518110695427"],
 
     "time_auto_delete": 7000,
+    "time_auto_delete_output": 12000,
+    "time_auto_delete_info": 25000,
 
     "commands_cooldown_sec": 5,
     

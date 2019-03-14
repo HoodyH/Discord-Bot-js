@@ -39,7 +39,7 @@ module.exports.init = (message, command_name) => {
         .setDescription(output)
         .setColor(botconfig.yellow)
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
 }
 
 module.exports.initDone = (message) => {
@@ -53,6 +53,6 @@ module.exports.initDone = (message) => {
         .setColor(botconfig.green)
         .addField("For **keep this chat cleen** of text use ", p + "keep.deleted")
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
 }
 
