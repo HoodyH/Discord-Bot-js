@@ -13,8 +13,6 @@ const Discord = require("discord.js");
 const YT = require("discord-youtube-api");
 const youtube = new YT(botconfig.youtube_TOKEN);
 
-//variables
-const time_auto_delete = botconfig.time_auto_delete;
 
 module.exports.run = async (bot, message, args) => {
 

@@ -12,7 +12,7 @@ module.exports.activated = (message, command_name) => {
         .setTitle(command_name + " **Ativated**")
         .setColor(botconfig.green)
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.deactivated = (message, command_name) => {
@@ -20,7 +20,7 @@ module.exports.deactivated = (message, command_name) => {
         .setTitle(command_name + " **Detivated**")
         .setColor(botconfig.green)
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.init = (message, command_name) => {
@@ -52,6 +52,16 @@ module.exports.initDone = (message) => {
         .setDescription("now you can use the command")
         .setColor(botconfig.green)
         .addField("For **keep this chat cleen** of text use ", p + "keep.deleted")
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
+}
+
+module.exports.betaCommand = (message, command_name, version) => {
+
+    let embed = new Discord.RichEmbed()
+        .setTitle("This Module is still in **Besta**")
+        .setDescription("Name: " + command_name + "\nVersion: " + version)
+        .setColor(botconfig.yellow)
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
 }

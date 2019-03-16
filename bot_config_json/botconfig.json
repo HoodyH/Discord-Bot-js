@@ -1,6 +1,7 @@
 {
     "test_TOKEN": "NTUwMjU5NTE4MTEwNjk1NDI3.D1f6Ew.a_KVXTjub_pVsUo_kh3jMFDg5EA",
     "main_TOKEN": "NTM5MDEzOTg4MjY5MjkzNTg4.Dy8Y-A.N_iKo6H3FxvwnYbHqRStHqMLfTw",
+    "youtube_TOKEN": "AIzaSyA3L_TA8I7nep4z5mtkP5rZT2rwIggWNYE",
     "test_join_link": "https://discordapp.com/api/oauth2/authorize?client_id=550259518110695427&permissions=8&scope=bot",
     "main_join_link": "https://discordapp.com/api/oauth2/authorize?client_id=539013988269293588&permissions=8&scope=bot",
     "defaultPrefix": "\\",
@@ -9,13 +10,13 @@
     "bot_main_id": "539013988269293588",
     "bot_test_id": "550259518110695427",
 
-    "youtube_TOKEN": "AIzaSyA3L_TA8I7nep4z5mtkP5rZT2rwIggWNYE",
-
-    "aut_writers": ["539013988269293588","550259518110695427"],
-
-    "time_auto_delete": 7000,
-    "time_auto_delete_output": 12000,
-    "time_auto_delete_info": 25000,
+    "sudo_users": ["436515529692545044"],
+        
+    "time_auto_delete_chat": 10000,
+    "time_auto_delete_fast": 7000,
+    "time_auto_delete_output": 20000,
+    "time_auto_delete_post": 50000,
+    "auto_delete_ignore": ["539013988269293588","550259518110695427"],
 
     "commands_cooldown_sec": 5,
     
@@ -29,5 +30,8 @@
     "green":    "#00ff26",
     "purple":   "#d604cf",
     "white":    "#ffffff",
-    "black":    "#000001"
+    "black":    "#000001",
+
+    "last_release_date": "2019/03/16",
+    "release_version": "0.2.14"
 }

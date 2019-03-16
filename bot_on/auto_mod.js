@@ -6,6 +6,7 @@ const botconfig = require("../bot_config_json/botconfig.json");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
+const utils = require("../utils/utils.js");
 
 //external_libs
 const fse = require('fs-extra');
@@ -27,33 +28,23 @@ class _auto_mod
 
     async keep_deleted(message)
     {
-        const storage_location = "./storage";
-        const guild_id = message.guild.id;
-        const dir = `${storage_location}/${guild_id}`; //song_request.json
-        const file_dir = `${dir}/guild_config.json`;
 
-        try {
-            guild_config = require("."+file_dir);
-        } catch (err) {
-            if (err.code == 'MODULE_NOT_FOUND') {
-                fse.outputFileSync(file_dir, "{}");
-                guild_config = require("."+file_dir);
-            }
-        }
+        let file_dir = utils.jsonLogName(message, "guild_config");
+        let json_file = utils.jsonLogOpen(file_dir);
 
-        if(!guild_config["channel_keep_deleted"])
+        if(!json_file["channel_keep_deleted"])
         {
-            guild_config["channel_keep_deleted"] = {
-                channels_id: []
+            json_file["channel_keep_deleted"] = {
+                channels: []
             }
-            fse.outputFileSync(file_dir, JSON.stringify(guild_config, null, 4));
+            utils.jsonLogSave(file_dir, json_file);
         }
         
-        let channels_id = guild_config["channel_keep_deleted"].channels_id;
+        let channels_id = json_file["channel_keep_deleted"].channels;
         let array = channels_id.slice(0);
 
         if(array.includes(message.channel.id)) {
-            if( !botconfig.aut_writers.includes(message.author.id)) 
+            if( !botconfig.auto_delete_ignore.includes(message.author.id)) 
             {
                 message.delete().catch(console.error);
                 errors.noChatHere(message);

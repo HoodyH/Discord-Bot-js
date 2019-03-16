@@ -38,6 +38,10 @@ module.exports.jsonLogSave = (file_dir, obj) => { //oper or create file in stora
     fse.outputFileSync(file_dir, JSON.stringify(obj, null, 4));   
 }
 
+module.exports.jsonCreateGuilConfig = (file_dir, obj) => { //create a new file guild config
+
+}
+
 module.exports.secondsToTime = (sec) => {
 
     var days = Math.floor(sec / (3600*24));

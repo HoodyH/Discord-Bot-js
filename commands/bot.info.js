@@ -10,27 +10,25 @@ module.exports.run = async (bot, message, args) => {
   let g = message.guild;
 
   var resMsg = await message.channel.send('Ping calcutale..');
-    //.then(m => m.delete(1000));
   
-  resMsg.edit('Ping: ' + Math.round((resMsg.createdTimestamp - message.createdTimestamp) - bot.ping));
-  message.channel.send(bot.ping);
+  let reactivity = Math.round((resMsg.createdTimestamp - message.createdTimestamp) - bot.ping);
+  
+  resMsg.delete(200);
 
-  var createdAt = g.createdAt
-            .toString()
-            .slice(4,33)
-            .replace(/ /g,"_")
-            .replace(/:/g,"_")
-            .replace(/\+/g,"_");
+  let creation_date = g.createdAt.toString().slice(4,15);
+  let creation_time = g.createdAt.toString().slice(16,24);
+  let description = "My name is: **" + bot.user.username + "** (mlgnlllrfekjhadrg), i was born on **" +
+                    creation_date + " at " + creation_time + "** ,nice."
 
-  let bicon = bot.user.displayAvatarURL;
-  let botembed = new Discord.RichEmbed()
-  .setDescription("Bot Information")
-  .setColor("#15f153")
-  .setThumbnail(bicon)
-  .addField("Bot Name", bot.user.username)
-  .addField("Created On", bot.user.createdAt);
+  let embed_out = new Discord.RichEmbed()
+  .setTitle("Bot Information")
+  .setColor(botconfig.white)
+  .setThumbnail(bot.user.displayAvatarURL)
+  .setDescription(description)
+  .addField("Ping", bot.ping + " ms", true)
+  .addField("Reactivity", reactivity + " ms", true);
 
-  message.channel.send(botembed).then(m => m.delete(botconfig.time_auto_delete_info));
+  message.channel.send(embed_out).then(m => m.delete(botconfig.time_auto_delete_output));
 }
 
 module.exports.help = {

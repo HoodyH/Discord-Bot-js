@@ -9,7 +9,7 @@ module.exports.noChatHere = (message) => {
         .setTitle("**You can't chat here**")
         .setDescription("this channel is not meant for this");
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.noPermits = (message, perm) => {
@@ -22,7 +22,7 @@ module.exports.noPermits = (message, perm) => {
         .setColor(botconfig.red)
         .addField(`You need: **${perm}** permit`, `use ${p}help.permits to learn more`);
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.wrongChannel = (message, channel) => {
@@ -32,7 +32,7 @@ module.exports.wrongChannel = (message, channel) => {
         .setTitle("Wrong channel for this command bru")
         .setDescription("go in **#" + channel + "**");
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.commandError = (message, error) => {
@@ -42,7 +42,7 @@ module.exports.commandError = (message, error) => {
         .setColor(botconfig.red)
         .setTitle(error);
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.equalPerms = (message, user, perms) => {
@@ -53,7 +53,7 @@ module.exports.equalPerms = (message, user, perms) => {
         .setTitle("Error")
         .addField(`${user} has perms`, perms);
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 
 }
 
@@ -63,7 +63,7 @@ module.exports.botuser = (message) => {
         .setDescription("You cannot ban a bot.")
         .setColor(botconfig.red);
 
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.cantfindUser = (channel) => {
@@ -72,7 +72,7 @@ module.exports.cantfindUser = (channel) => {
         .setDescription("Could not find that user.")
         .setColor(botconfig.red);
 
-    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
 module.exports.noReason = (channel) => {
@@ -81,5 +81,5 @@ module.exports.noReason = (channel) => {
         .setDescription("Please supply a reason.")
         .setColor(botconfig.red);
 
-    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete));
+    channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }

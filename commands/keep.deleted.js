@@ -15,19 +15,31 @@ module.exports.run = async (bot, message, args) => {
     errors.noPermits(message, "Configurator");
     return;
   }
-
+    
+    /*
+      command_name <arg> <arg> ....
+          possibiles args
+            man -> explain the scope and the use of this command in an embed
+            init -> if neded init the command (enable the command and lock him to che channel)
+            !message_type
+          
+      channel_id {
+          commands_allowed []
+          message_type []
+      }
+    */
   let file_dir = utils.jsonLogName(message, "guild_config");
   let json_file = utils.jsonLogOpen(file_dir);
 
   if(!json_file["channel_keep_deleted"])
   {
     json_file["channel_keep_deleted"] = {
-      channels_id: []
+      channels: []
     }
   }
   
-  let channels_id = json_file["channel_keep_deleted"].channels_id;
-  let array = channels_id.slice(0);
+  let channels = json_file["channel_keep_deleted"].channels;
+  let array = channels.slice(0);
   
   if(!array.includes(message.channel.id)) {
     array.push(message.channel.id);
@@ -41,7 +53,7 @@ module.exports.run = async (bot, message, args) => {
     notifications.deactivated(message, command_name);
   }
 
-  json_file["channel_keep_deleted"].channels_id = array;
+  json_file["channel_keep_deleted"].channels = array;
 
   utils.jsonLogSave(file_dir, json_file);
 }
