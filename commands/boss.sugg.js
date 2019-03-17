@@ -1,11 +1,12 @@
 //command_name
 const command_name = "keep.deleted";
 
-const Discord = require("discord.js");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
 const utils = require("../utils/utils.js");
+
+const Discord = require("discord.js");
 
 module.exports.run = async (bot, message, args) => {
     

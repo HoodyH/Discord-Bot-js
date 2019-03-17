@@ -7,6 +7,16 @@ const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
 
+module.exports.genericNotification = (message, notification) => {
+    
+    let embed = new Discord.RichEmbed()
+        .setAuthor(message.author.username)
+        .setColor(botconfig.green)
+        .setTitle(notification);
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
+}
+
 module.exports.activated = (message, command_name) => {
     let embed = new Discord.RichEmbed()
         .setTitle(command_name + " **Ativated**")
@@ -23,7 +33,7 @@ module.exports.deactivated = (message, command_name) => {
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
 
-module.exports.init = (message, command_name) => {
+module.exports.toInit = (message, command_name) => {
 
     const prefix = require("../storage/prefixes");
     let p = prefix[message.guild.id].prefix;

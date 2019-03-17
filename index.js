@@ -42,17 +42,13 @@ bot.on("ready", async () => {
   }else{
       console.log("WARING I'M RUNNING ON MAIN BOT");
   }
-
   bot.user.setPresence({
     game: { 
-        name: "playing",
-        type: "GIRLS"
+        name: "GIRLS"
     },
     status: 'online' //idle
   });
-
 });
-
 
 bot.on("message", async message => {
 
@@ -101,7 +97,7 @@ bot.on("message", async message => {
   let args = messageArray.slice(1);
 
   let commandfile = bot.commands.get(cmd.slice(prefix.length));
-  if(commandfile) commandfile.run(bot,message,args);
+  if(commandfile) commandfile.run(bot,message,args,botconfig);
 
   setTimeout(() => {
     cooldown.delete(message.author.id)

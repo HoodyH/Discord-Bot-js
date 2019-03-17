@@ -1,6 +1,15 @@
 const Discord = require("discord.js");
 const botconfig = require("../bot_config_json/botconfig.json");
 
+module.exports.genericError = (message, error) => {
+    
+    let embed = new Discord.RichEmbed()
+        .setAuthor(message.author.username)
+        .setColor(botconfig.red)
+        .setTitle(error);
+
+    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
+}
 
 module.exports.noChatHere = (message) => {
     let embed = new Discord.RichEmbed()
@@ -31,16 +40,6 @@ module.exports.wrongChannel = (message, channel) => {
         .setColor(botconfig.red)
         .setTitle("Wrong channel for this command bru")
         .setDescription("go in **#" + channel + "**");
-
-    message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
-}
-
-module.exports.commandError = (message, error) => {
-    
-    let embed = new Discord.RichEmbed()
-        .setAuthor(message.author.username)
-        .setColor(botconfig.red)
-        .setTitle(error);
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
 }
