@@ -10,22 +10,22 @@ const utils = require("../utils/utils.js");
 //external_libs
 const fse = require("fs-extra");
 
-module.exports.preCeck = (bot, message, args, command_name, file_dir_command, db_command_obj, db_config_obj) => {
+module.exports.preCeck = async (bot, message, args, file_dir, db_obj, specific_com_obj, db_config_obj) => {
     //default arguments "init" "info"
     //auto_prececk  "message" "DB_FILE" "DB_CONFIG" 
     //THINGS TO CECK "enabled" "only admin" "channel vincolation"
-    const g_log = db_command_obj["guild_data"];
+    const g_log = db_obj["guild_data"];
 
     //recicived a init request, ceck permissions before go
     if(args == "init" && g_log.lock_in_channel_en == 1)
     {
       if(permits.configurator(message))
       {
+        notifications.initDone(message);
+        g_log.last_man_message_id = await utils.manAsLastMessage(bot, message, db_obj, specific_com_obj);
         g_log.channel_id = message.channel.id;
         g_log.channel_name = message.channel.name;
-        utils.jsonLogSave(file_dir_command, db_command_obj);
-
-        notifications.initDone(message);
+        utils.jsonLogSave(file_dir, db_obj);
         return false;  
 
       //this user cant init cause not enought permissions
@@ -45,11 +45,46 @@ module.exports.preCeck = (bot, message, args, command_name, file_dir_command, db
     //init required, the command dont have a channel assigned
     if(g_log.lock_in_channel_en == 1 && g_log.channel_id == "ND")
     {
-      notifications.toInit(message, command_name);
+      notifications.toInit(message, specific_com_obj.name);
+      return false;
+    }
+
+    if(args == "man"){
+      g_log.last_man_message_id = await utils.manAsLastMessage(bot, message, db_obj, specific_com_obj);
+      utils.jsonLogSave(file_dir, db_obj);
       return false;
     }
 
     return true;
+}
+
+
+module.exports.manAsLastMessage = async (bot, message, db_obj, specific_com_obj) => {
+  
+    const g_log = db_obj["guild_data"];
+
+    async function del (){
+      try {
+        let channel = bot.channels.get(g_log.channel_id);
+        let lastMex = await channel.fetchMessage(g_log.last_man_message_id)
+        lastMex.delete();
+      } catch (err) {
+        console.log("error deleting message in manAsLastMessage function");
+      }
+    }
+
+    if(g_log.man_as_last_message == 1)
+    {
+        if(g_log.last_man_message_id != ""){
+          del();
+        }
+        let newMex = await notifications.fastManual(message, specific_com_obj.man, specific_com_obj.name);
+        return newMex.id;
+
+    }else if(g_log.last_man_message_id != ""){
+      del();
+      return "";
+    }
 }
 
 module.exports.jsonLogName = (message, file_name) => { //oper or create file in storage/guildID
@@ -100,6 +135,26 @@ module.exports.secondsToTime = (sec) => {
     return result;  
 }
 
-module.exports.dataDiff = (date_now, date_1) => {
-   return (date_now - new Date(date_1.toString())) / (1000*60*60*24);
+module.exports.dataToTime = (data) => {
+  return data.toString().slice(11,16);
+}
+module.exports.dataToDay = (data) => {
+  return data.toString().slice(0,10);
+}
+
+module.exports.dataDiff = (date_now, date_1, resut_time_type, result_elab) => {
+  let div;
+  switch(resut_time_type){
+    case "d": div = 1000*60*60*24;break; //days
+    case "h": div = 1000*60*60;break; //hours
+    case "m": div = 1000*60;break; //min
+    case "s": div = 1000;break; //sec
+    default: div = 1000*60*60*24; //default in days
+  }
+  switch(result_elab){
+    case "ceil": return Math.ceil((date_now - new Date(date_1)) / div);
+    case "floor": return Math.floor((date_now - new Date(date_1)) / div);
+    default: return (date_now - new Date(date_1)) / div;
+  }
+  
 }

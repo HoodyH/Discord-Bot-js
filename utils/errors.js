@@ -15,7 +15,7 @@ module.exports.noChatHere = (message) => {
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
         .setColor(botconfig.red)
-        .setTitle("**You can't chat here**")
+        .setTitle("You can't chat here")
         .setDescription("this channel is not meant for this");
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
@@ -27,7 +27,7 @@ module.exports.noPermits = (message, perm) => {
 
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
-        .setTitle("**Insufficient Permissions**")
+        .setTitle("Insufficient Permissions")
         .setColor(botconfig.red)
         .addField(`You need: **${perm}** permit`, `use ${p}help.permits to learn more`);
 
@@ -38,7 +38,7 @@ module.exports.wrongChannel = (message, channel) => {
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
         .setColor(botconfig.red)
-        .setTitle("Wrong channel for this command bru")
+        .setTitle("Wrong channel for this command")
         .setDescription("go in **#" + channel + "**");
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));

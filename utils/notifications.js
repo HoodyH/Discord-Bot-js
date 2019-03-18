@@ -6,6 +6,7 @@ const botconfig = require("../bot_config/botconfig.json");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
+const com = require("../bot_config/commands_config.js").com;
 
 module.exports.genericNotification = (message, notification) => {
     
@@ -19,7 +20,7 @@ module.exports.genericNotification = (message, notification) => {
 
 module.exports.activated = (message, command_name) => {
     let embed = new Discord.RichEmbed()
-        .setTitle(command_name + " **Ativated**")
+        .setTitle(command_name + " Ativated")
         .setColor(botconfig.green)
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
@@ -27,7 +28,7 @@ module.exports.activated = (message, command_name) => {
 
 module.exports.deactivated = (message, command_name) => {
     let embed = new Discord.RichEmbed()
-        .setTitle(command_name + " **Detivated**")
+        .setTitle(command_name + " Detivated")
         .setColor(botconfig.green)
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_fast));
@@ -39,7 +40,7 @@ module.exports.toInit = (message, command_name) => {
     let p = prefix[message.guild.id].prefix;
     let output;
     if(permits.configurator(message)){
-        output = "You have to **init** the channel, use " + p + command_name + " init";
+        output = "You have to init the channel, use " + p + command_name + " init";
     }else{
         output = "The command has not been initialized yet";
     }
@@ -61,7 +62,7 @@ module.exports.initDone = (message) => {
         .setTitle("Inizialization Completed")
         .setDescription("now you can use the command")
         .setColor(botconfig.green)
-        .addField("For **keep this chat cleen** of text use ", p + "keep.deleted")
+        .addField("For keep this chat cleen of text use ", p + com.keep_deleted.name)
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
 }
@@ -76,14 +77,14 @@ module.exports.betaCommand = (message, command_name, version) => {
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
 }
 
-module.exports.fastManual = (message, command_name, manual) => {
+module.exports.fastManual = (message, comand_man, command_name) => {
 
     const prefix = require("../storage/prefixes");
     let p = prefix[message.guild.id].prefix;
 
     let embed = new Discord.RichEmbed()
-        .setTitle("How to use **" + p + command_name + "** command")
-        .setDescription(manual)
+        .setTitle(`How to use ${p}${command_name} command`)
+        .setDescription(comand_man)
         .setColor(botconfig.white)
 
     return message.channel.send(embed);

@@ -13,8 +13,8 @@
     "sudo_users": ["436515529692545044"],
         
     "time_auto_delete_chat": 10000,
-    "time_auto_delete_fast": 7000,
-    "time_auto_delete_output": 20000,
+    "time_auto_delete_fast": 15000,
+    "time_auto_delete_output": 25000,
     "time_auto_delete_post": 50000,
     "auto_delete_ignore": ["539013988269293588","550259518110695427"],
 
