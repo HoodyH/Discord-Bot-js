@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 
 //utilities
-const botconfig = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config/botconfig.json");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");

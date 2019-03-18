@@ -1,8 +1,8 @@
 //extra_files
-const words = require("../bot_config_json/auto_mod_words.json");
+const words = require("../bot_config/auto_mod_words.json");
 
 //utilities
-const botconfig = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config/botconfig.json");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
@@ -35,7 +35,7 @@ class _auto_mod
         if(!json_file["channel_keep_deleted"])
         {
             json_file["channel_keep_deleted"] = {
-                channels: []
+                channels: [""]
             }
             utils.jsonLogSave(file_dir, json_file);
         }

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const botconfig = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config/botconfig.json");
 
 module.exports.genericError = (message, error) => {
     

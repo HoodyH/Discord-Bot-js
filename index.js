@@ -1,4 +1,4 @@
-const botconfig = require("./bot_config_json/botconfig.json");
+const botconfig = require("./bot_config/botconfig.json");
 const Discord = require("discord.js");
 const fse = require("fs-extra");
 const bot = new Discord.Client();

@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const fs = require("fs");
 
 //utilities
-const botconfig = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config/botconfig.json");
 const errors = require("../utils/errors.js");
 const notifications = require("../utils/notifications.js");
 const permits = require("../utils/permits_ceck.js");
@@ -74,5 +74,18 @@ module.exports.betaCommand = (message, command_name, version) => {
         .setColor(botconfig.yellow)
 
     message.channel.send(embed).then(m => m.delete(botconfig.time_auto_delete_output));
+}
+
+module.exports.fastManual = (message, command_name, manual) => {
+
+    const prefix = require("../storage/prefixes");
+    let p = prefix[message.guild.id].prefix;
+
+    let embed = new Discord.RichEmbed()
+        .setTitle("How to use **" + p + command_name + "** command")
+        .setDescription(manual)
+        .setColor(botconfig.white)
+
+    return message.channel.send(embed);
 }
 

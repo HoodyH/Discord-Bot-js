@@ -1,7 +1,7 @@
 const command_name = "server.story";
 const Discord = require("discord.js");
 
-const botconfig = require("../bot_config_json/botconfig.json");
+const botconfig = require("../bot_config/botconfig.json");
 
 module.exports.run = async (bot, message, args) => {
 
