@@ -49,22 +49,24 @@ module.exports.run = async (bot, message, args) => {
       creator_name: "The Boss", //to move to guild config
       
       days_before_same_song_en: 1,
-      user_days_before_same_song: 1,
-      guild_days_before_same_song: 1,
+      user_days_before_same_song: 3,
+      guild_days_before_same_song: 2,
 
       songs_per_day_en: 1,
       songs_today_counter: 0,
       last_reset: "",
-      user_songs_per_day: 5,
-      guild_songs_per_day: 100,
+      user_songs_per_day: 2,
+      guild_songs_per_day: 3,
       
       cooldown_time: 0,
 
       auto_role_en: 1,
-      auto_role_assign: 0,
+      auto_role_assign: 1,
+      auto_remove_lower_role: 1,
       role_at: [100,200,500],
       role_color: [botconfig.green, botconfig.orange, botconfig.purple],
       role_name: ["S","SS","SSS"],
+      role_perm: ["","",""],
       vid_ids: [],
       vid_add_times: []
     };
@@ -111,7 +113,7 @@ module.exports.run = async (bot, message, args) => {
   //---------------------------------------------------------
   //video times controll
   
-  if(g_log.days_before_same_song_en == 1){ //if bot are disabled i dont need to log the songs
+  if(g_log.days_before_same_song_en == 1){ //if is disabled i dont need to log the songs
     
       function removeOldVids(vid_ids, vid_add_times, requests_on, time) {
         let deleted_count = 0;
@@ -150,23 +152,19 @@ module.exports.run = async (bot, message, args) => {
       
       if(u_log.songs_today_counter >= g_log.user_songs_per_day)
       {
-        let day = utils.dataToDay(u_log.last_reset);
-        let time = utils.dataToTime(u_log.last_reset);
+        let backup_time = 24 - utils.dataDiff(date_now, u_log.last_reset, "h", "round");
         let text =  "You have already request your " + g_log.user_songs_per_day + " songs for today!\n" +
-                    "Your song counter will rest in " + 
-                    utils.dataDiff(date_now, u_log.last_reset, "h", "ceil") + " h\n"+
-                    "Your last reset was on " + day + " at " + time;
+                    "Your song counter will rest in " + backup_time + " h\n"+
+                    "Last reset was on " + utils.DayAtTime(u_log.last_reset);
         errors.genericError(message, text);
         return;
       }
       if(g_log.songs_today_counter >= g_log.guild_songs_per_day)
       {
-        let day = utils.dataToDay(g_log.last_reset);
-        let time = utils.dataToTime(g_log.last_reset);
-        let text =  "The server has reached " + g_log.guild_songs_per_day + "songs for today!\n" +
-                    "The request command is paused, it will back up in " +
-                    utils.dataDiff(date_now, g_log.last_reset, "h", "ceil") + " h\n" +
-                    "The server last reset was on " + day + " at " + time;
+        let backup_time = 24 - utils.dataDiff(date_now, g_log.last_reset, "h", "round");
+        let text =  "The server has reached " + g_log.guild_songs_per_day + " songs for today!\n" +
+                    "The request command is paused, it will back up in " + backup_time + " h\n" +
+                    "Last reset was on " + utils.DayAtTime(u_log.last_reset);
         errors.genericError(message, text);
         return;
       }
@@ -193,9 +191,7 @@ module.exports.run = async (bot, message, args) => {
       for(let i = 0; i <u_log.requests_on; i++){
         if (u_log.vid_ids[i] == video.id) 
         {
-          let day = utils.dataToDay(u_log.vid_add_times[i]);
-          let time = utils.dataToTime(u_log.vid_add_times[i]);
-          let error = "You added this song on " + day + " at " + time + 
+          let error = "You added this song on " + utils.DayAtTime(u_log.last_reset) + 
                       "\nYou have to wait " + g_log.user_days_before_same_song + 
                       " days before have the ability to ad the same song again";
           errors.genericError(message, error);
@@ -205,9 +201,7 @@ module.exports.run = async (bot, message, args) => {
       for(let i = 0; i <g_log.requests_on; i++){
         if (g_log.vid_ids[i] == video.id) 
         {
-          let day = utils.dataToDay(g_log.vid_add_times[i]);
-          let time = utils.dataToTime(g_log.vid_add_times[i]);
-          let error = "This song has been added on " + day + " at " + time + 
+          let error = "This song has been added on " + utils.DayAtTime(u_log.last_reset) + 
                       "\nYou have to wait " + g_log.guild_days_before_same_song + 
                       " days before have the ability to ad the same song again";
           errors.genericError(message, error);
@@ -244,26 +238,13 @@ module.exports.run = async (bot, message, args) => {
   g_log.time_dancing += video.durationSeconds;
 
   //role management
+  let embed_color;
   if(g_log.role_reward == 1){
-
-    if(u_log.songs_counter > g_log.unlock_role_at)
-    {
-      u_log.role = 1;
-    }else{
-      u_log.role = 0;
-    }
-
-    let embed_color;
-
-    if(u_log.role == 0){
-      embed_color = botconfig.black;
-    }else{
-      for(let i = 0; i<g_log.role_at.length(); i++){
-        if(u_log.role == i){
-          embed_color = g_log.role_color[i];
-        }
-      }
-    }
+    let actual_role = utils.roleReward(json_file, u_log.songs_counter);
+    u_log.role = actual_role.num;
+    embed_color = actual_role.color;
+    utils.roleAssign(message, actual_role.name, actual_role.color);
+ 
   }else{
     embed_color = botconfig.black;
   }

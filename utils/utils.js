@@ -135,11 +135,15 @@ module.exports.secondsToTime = (sec) => {
     return result;  
 }
 
+module.exports.dataToDay = (data) => {
+  return data.toString().slice(0,10);
+}
 module.exports.dataToTime = (data) => {
   return data.toString().slice(11,16);
 }
-module.exports.dataToDay = (data) => {
-  return data.toString().slice(0,10);
+module.exports.DayAtTime = (data) => {
+  console.log(utils.dataToDay(data) + " at " + utils.dataToTime(data));
+  return utils.dataToDay(data) + " at " + utils.dataToTime(data);  
 }
 
 module.exports.dataDiff = (date_now, date_1, resut_time_type, result_elab) => {
@@ -154,7 +158,66 @@ module.exports.dataDiff = (date_now, date_1, resut_time_type, result_elab) => {
   switch(result_elab){
     case "ceil": return Math.ceil((date_now - new Date(date_1)) / div);
     case "floor": return Math.floor((date_now - new Date(date_1)) / div);
+    case "round": return Math.round((date_now - new Date(date_1)) / div);
     default: return (date_now - new Date(date_1)) / div;
   }
   
+}
+
+module.exports.roleReward = (db_obj, actual_progress) => {
+  const db = db_obj["guild_data"];
+  let num;
+  let color;
+  let name;
+  for(let i = db.role_at.length()-1; i >= 0; i--){
+    if(actual_progress >= db.role_at[i]){
+      num = i + 1;
+      color = db.role_color[i];
+      name = db.role_name[i];
+      break;
+    }
+  }
+
+  const out = {
+    num: num,
+    color: color,
+    name: name
+  }
+  return out;
+}
+
+module.exports.roleAssign = (message, role_name, role_color, role_permits, role_position) => {
+  
+  let guild = message.guild;
+
+  let role = guild.roles.find("name", role_name);
+  if (!gRole){
+
+    guild.createRole({
+      data: {
+        name: role_name,
+        color: role_color,
+        hoist: false,
+        mentionable: false,
+        //permissions
+        //position
+      },
+    });
+
+  }
+
+  if(message.author.role.has(gRole.id)){
+    rMember.send(`has already this role`)
+    return;
+  }
+  
+  await (rMember.addRole(gRole.id));
+
+  try {
+    await rMember.send(`Congrats, you have been given the role ${gRole.name}`)
+  } catch (e) {
+    console.log(e.stack);
+    message.channel.send(`Congrats to <@${rMember.id}>, they have been given the role ${gRole.name}. We tried to DM them, but their DMs are locked.`)
+  }
+  return;  
 }
