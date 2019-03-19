@@ -142,7 +142,6 @@ module.exports.dataToTime = (data) => {
   return data.toString().slice(11,16);
 }
 module.exports.DayAtTime = (data) => {
-  console.log(utils.dataToDay(data) + " at " + utils.dataToTime(data));
   return utils.dataToDay(data) + " at " + utils.dataToTime(data);  
 }
 
@@ -161,15 +160,14 @@ module.exports.dataDiff = (date_now, date_1, resut_time_type, result_elab) => {
     case "round": return Math.round((date_now - new Date(date_1)) / div);
     default: return (date_now - new Date(date_1)) / div;
   }
-  
 }
 
 module.exports.roleReward = (db_obj, actual_progress) => {
   const db = db_obj["guild_data"];
-  let num;
-  let color;
-  let name;
-  for(let i = db.role_at.length()-1; i >= 0; i--){
+  let num = 0;
+  let color = null;
+  let name = null;
+  for(let i = db.role_at.length-1; i >= 0; i--){
     if(actual_progress >= db.role_at[i]){
       num = i + 1;
       color = db.role_color[i];
@@ -186,7 +184,7 @@ module.exports.roleReward = (db_obj, actual_progress) => {
   return out;
 }
 
-module.exports.roleAssign = (message, role_name, role_color, role_permits, role_position) => {
+module.exports.roleAssign = async (message, role_name, role_color, role_permits, role_position) => {
   
   let guild = message.guild;
 

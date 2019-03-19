@@ -24,45 +24,46 @@ module.exports.run = async (bot, message, args) => {
   if(!json_file["guild_data"])
   {
     json_file["guild_data"] = {
-      guild_id: message.guild.id,
-      guild_name: message.guild.name,
+      guild_id: message.guild.id, //the unique id of the guild
+      guild_name: message.guild.name, //the name of the guild
 
-      only_admin_command: 0,
-      enabled: 1,
-      man_as_last_message: 1,
-      last_man_message_id: "",
+      only_admin_command: 0, //this command can be used only by an admin
+      enabled: 1, //this command is enabled
+      man_as_last_message: 1, //the isctructions of how to use the commans
+      channel_reaction_disabled: 0, //the reactions in the channel are disabled to a better vote system
+      last_man_message_id: "", //id of the last message, for delete it.
     
-      lock_in_channel_required: 1,
+      lock_in_channel_required: 1, //this command can be used only 
       lock_in_channel_en: 1,
-      channel_id: "ND",
-      channel_name: "ND",
+      channel_id: "ND", //the uniche channel id of the 
+      channel_name: "ND", //name of the channel for display it (to remove insted name calculation)
       private_mode: 0, //don't show username of the person who request the song
 
-      active_users_counter: 1,
-      songs_counter: 0,
-      requests_on: 0,
-      time_dancing: 0,
+      active_users_counter: 1, //count the users in the server that have used this command at list onece.
+      songs_counter: 0, //count all the songs requested in the server
+      requests_on: 0, //? active request
+      time_dancing: 0, //the sum of the video lenght
 
-      video_max_lenght: 300,
+      video_max_lenght: 300, //max durations in sec of the vid
     
       logo: "AB_Songs", //to move to guild config
       creator_name: "The Boss", //to move to guild config
       
-      days_before_same_song_en: 1,
+      days_before_same_song_en: 1, //avoid same song in a short interval
       user_days_before_same_song: 3,
       guild_days_before_same_song: 2,
 
-      songs_per_day_en: 1,
+      songs_per_day_en: 1, //max num of song that can be posted in one day
       songs_today_counter: 0,
-      last_reset: "",
-      user_songs_per_day: 2,
-      guild_songs_per_day: 3,
+      last_reset: "", 
+      user_songs_per_day: 2, //songs per day by a single user
+      guild_songs_per_day: 3, //songs per day in the server
       
-      cooldown_time: 0,
+      cooldown_time: 0, //? time before reuse the command for the same user
 
-      auto_role_en: 1,
-      auto_role_assign: 1,
-      auto_remove_lower_role: 1,
+      embed_color_en: 1, //only color the embed on the base of the activity
+      auto_role_assign_en: 1, //enable the server role assign
+      auto_remove_lower_role: 1, //remove previous role before release a new one
       role_at: [100,200,500],
       role_color: [botconfig.green, botconfig.orange, botconfig.purple],
       role_name: ["S","SS","SSS"],
@@ -201,7 +202,7 @@ module.exports.run = async (bot, message, args) => {
       for(let i = 0; i <g_log.requests_on; i++){
         if (g_log.vid_ids[i] == video.id) 
         {
-          let error = "This song has been added on " + utils.DayAtTime(u_log.last_reset) + 
+          let error = "This song has been already added on " + utils.DayAtTime(u_log.last_reset) + 
                       "\nYou have to wait " + g_log.guild_days_before_same_song + 
                       " days before have the ability to ad the same song again";
           errors.genericError(message, error);
@@ -237,16 +238,22 @@ module.exports.run = async (bot, message, args) => {
   u_log.time_dancing += video.durationSeconds;
   g_log.time_dancing += video.durationSeconds;
 
-  //role management
   let embed_color;
-  if(g_log.role_reward == 1){
-    let actual_role = utils.roleReward(json_file, u_log.songs_counter);
+  let actual_role;
+  //get role informations
+  if(g_log.embed_color_en == 1 || g_log.auto_role_assign_en == 1){
+    actual_role = utils.roleReward(json_file, u_log.songs_counter);
     u_log.role = actual_role.num;
+  } 
+  //embed color auto management
+  if(g_log.embed_color_en == 1 && actual_role.color != null){
     embed_color = actual_role.color;
-    utils.roleAssign(message, actual_role.name, actual_role.color);
- 
   }else{
-    embed_color = botconfig.black;
+    embed_color = botconfig.embed_default_color;
+  }
+  //auto role assign
+  if(g_log.auto_role_assign_en == 1){
+    //utils.roleAssign(message, actual_role.name, actual_role.color);
   }
 
   let description = "You have request **" + u_log.songs_counter +  "** songs, and **" + g_log.creator_name + 

@@ -32,6 +32,8 @@
     "white":    "#ffffff",
     "black":    "#000001",
 
+    "embed_default_color": "#000001",
+
     "last_release_date": "2019/03/16",
     "release_version": "0.2.14"
 }
