@@ -56,8 +56,8 @@ module.exports.run = async (bot, message, args) => {
       songs_per_day_en: 1, //max num of song that can be posted in one day
       songs_today_counter: 0,
       last_reset: "", 
-      user_songs_per_day: 2, //songs per day by a single user
-      guild_songs_per_day: 3, //songs per day in the server
+      user_songs_per_day: 5, //songs per day by a single user
+      guild_songs_per_day: 40, //songs per day in the server
       
       cooldown_time: 0, //? time before reuse the command for the same user
 
@@ -165,7 +165,7 @@ module.exports.run = async (bot, message, args) => {
         let backup_time = 24 - utils.dataDiff(date_now, g_log.last_reset, "h", "round");
         let text =  "The server has reached " + g_log.guild_songs_per_day + " songs for today!\n" +
                     "The request command is paused, it will back up in " + backup_time + " h\n" +
-                    "Last reset was on " + utils.DayAtTime(u_log.last_reset);
+                    "Last reset was on " + utils.DayAtTime(g_log.last_reset);
         errors.genericError(message, text);
         return;
       }
@@ -202,7 +202,7 @@ module.exports.run = async (bot, message, args) => {
       for(let i = 0; i <g_log.requests_on; i++){
         if (g_log.vid_ids[i] == video.id) 
         {
-          let error = "This song has been already added on " + utils.DayAtTime(u_log.last_reset) + 
+          let error = "This song has been already added on " + utils.DayAtTime(g_log.last_reset) + 
                       "\nYou have to wait " + g_log.guild_days_before_same_song + 
                       " days before have the ability to ad the same song again";
           errors.genericError(message, error);
